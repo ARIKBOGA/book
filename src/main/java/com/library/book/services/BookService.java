@@ -1,9 +1,16 @@
 package com.library.book.services;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.library.book.domain.Book;
 
 public interface BookService {
     
 
     Book create (Book book);
+
+    Optional<Book> findBookByID(String isbn);
+
+    List<Book> findAllBooks();
 }
