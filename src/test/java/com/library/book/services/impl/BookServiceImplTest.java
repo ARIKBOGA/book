@@ -51,11 +51,14 @@ public class BookServiceImplTest {
         assertEquals(Optional.empty(), result);
     }
 
+    /**
+     * Test that the findBookByID method returns a Book when it exists.
+     */
     @Test
     public void testThatFindBookByIDReturnsBookWhenExists() {
 
         final Book book = TestData.getBook();
-        final BookEntity bookEntity = TestData.getBookEntity();
+        final BookEntity bookEntity = toBookEntity(book);
 
         when(bookRepository.findById(eq(book.getIsbn()))).thenReturn(Optional.of(bookEntity));
 
