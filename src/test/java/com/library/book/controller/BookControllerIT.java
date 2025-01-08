@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
 import com.library.book.domain.Book;
 import com.library.book.domain.BookEntity;
 import com.library.book.services.BookService;
@@ -22,6 +24,7 @@ import com.library.book.services.impl.TestData;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class BookControllerIT {
 
     @Autowired
@@ -34,7 +37,7 @@ public class BookControllerIT {
      * Tests that a book is created successfully using the put method.
      */
     @Test
-    public void testThatBookIsCreated() throws Exception {
+    public void testThatBookIsCreatedReturns201() throws Exception {
 
         // Arrange
         final Book book = TestData.getBook(); // book data returned from the TestData class
@@ -56,6 +59,38 @@ public class BookControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
     }
 
+    /**
+     * Tests that a book is updated successfully using the put method.
+     */
+    @Test
+    public void testThatBookIsUpdatedReturns200() throws Exception {
+        // Arrange
+        final Book book = TestData.getBook(); // book data returned from the TestData class
+
+        // Save the book to the database, so that it can be updated
+        bookService.save(book);
+
+        // Modify the book object
+        book.setAuthor(new Faker().book().author());
+
+        // Convert the book object to a JSON string
+        final String bookString = new ObjectMapper().writeValueAsString(book);
+
+        // Act
+        // The put method is used to update a book
+        // The content type is set to JSON
+        // The book object is converted to a JSON string
+        // The book is updated
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/" + book.getIsbn()).contentType(MediaType.APPLICATION_JSON)
+                .content(bookString))
+
+                // Assert
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
+    }
+
     @Test
     public void testThatBookIsNotFoundAndReturns404() throws Exception {
 
@@ -71,7 +106,7 @@ public class BookControllerIT {
         final Book book = TestData.getBook();
         final String isbn = book.getIsbn();
 
-        bookService.create(book);
+        bookService.save(book);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/books/" + isbn)).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
@@ -94,7 +129,7 @@ public class BookControllerIT {
         List<Book> listOfBook = TestData.getListOfBook(10);
 
         for (Book book : listOfBook) {
-            bookService.create(book);
+            bookService.save(book);
         }
 
         mockMvc.perform(MockMvcRequestBuilders.get("/books"))

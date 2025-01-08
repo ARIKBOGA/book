@@ -1,6 +1,7 @@
 package com.library.book.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -32,11 +33,11 @@ public class BookServiceImplTest {
 
         Book book = TestData.getBook();
 
-        BookEntity bookEntity = TestData.getBookEntity();
+        BookEntity bookEntity = toBookEntity(book);
 
-        when(bookRepository.save(eq(bookEntity))).thenReturn(bookEntity);
+        when(bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
 
-        final Book result = underTest.create(book);
+        final Book result = underTest.save(book);
 
         assertEquals(book, result);
     }
@@ -89,6 +90,24 @@ public class BookServiceImplTest {
 
         assertEquals(5, allBooks.size());
         assertEquals(expected, allBooks);
+    }
+
+    @Test
+    public void testThatBookReturnsFalseWhenItDoesNotExists() {
+
+        when(bookRepository.existsById(any())).thenReturn(false);
+        final boolean result = underTest.isBookExists(TestData.getBook());
+
+        assertEquals(Boolean.FALSE, result);
+    }
+
+    @Test
+    public void testThatBookReturnsTrueWhenItDoesExists() {
+
+        when(bookRepository.existsById(any())).thenReturn(true);
+        final boolean result = underTest.isBookExists(TestData.getBook());
+
+        assertEquals(Boolean.TRUE, result);
     }
         
 

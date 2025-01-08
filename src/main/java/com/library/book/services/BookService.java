@@ -7,8 +7,9 @@ import com.library.book.domain.Book;
 
 public interface BookService {
     
+    boolean isBookExists(Book book);
 
-    Book create (Book book);
+    Book save (Book book);
 
     Optional<Book> findBookByID(String isbn);
 
