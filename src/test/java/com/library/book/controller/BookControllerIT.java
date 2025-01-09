@@ -141,4 +141,24 @@ public class BookControllerIT {
 
 
     }
+
+
+    @Test
+    public void testThatDeleteReturns204WhenBookDoesNotExist() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/1234563424789"))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void testThatDeleteReturns204WhenBookExists() throws Exception {
+
+        final Book book = TestData.getBook();
+        final String isbn = book.getIsbn();
+
+        bookService.save(book);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + isbn))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
 }

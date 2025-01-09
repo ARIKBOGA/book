@@ -1,8 +1,11 @@
 package com.library.book.services.impl;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -108,6 +111,14 @@ public class BookServiceImplTest {
         final boolean result = underTest.isBookExists(TestData.getBook());
 
         assertEquals(Boolean.TRUE, result);
+    }
+
+    @Test
+    public void testThatDeleteBookDeletesBookWhenItExists() {
+
+        final String isbn  = "123456789";
+        underTest.deleteBookByID(isbn);
+        verify(bookRepository,times(1)).deleteById(isbn);
     }
         
 
