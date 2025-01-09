@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 import com.library.book.domain.Book;
 import com.library.book.domain.BookEntity;
 import com.library.book.repositories.BookRepository;
